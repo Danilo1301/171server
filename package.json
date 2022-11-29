@@ -1,0 +1,25 @@
+{
+  "name": "crabgame-server",
+  "version": "1.0.0",
+  "description": "\"# crabgame-server\"",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Danilo1301/crabgame-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Danilo1301/crabgame-server/issues"
+  },
+  "homepage": "https://github.com/Danilo1301/crabgame-server#readme",
+  "dependencies": {
+    "express": "^4.17.2",
+    "request": "^2.88.2",
+    "socket.io": "^4.4.1"
+  }
+}
