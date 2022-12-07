@@ -374,10 +374,14 @@ io.on('connection', function (socket) {
 
     console.log(`[app] ${id} new connection`);
 
+    
     const player = new Player();
     player.socket = socket;
     player.id = id;
     players.push(player)
+    
+    Gamelog.log(ip, `connected ${players.length + " players"}`);
+
 
     //processPlayerMessage(player, "/")
 
@@ -416,6 +420,8 @@ io.on('connection', function (socket) {
         console.log(`[app] ${id} disconnected at ${player.position.x} ${player.position.y} ${player.position.z}`);
 
         sendMessage("Server", `${player.id} left`)
+
+        Gamelog.log(ip, `disconnected`);
     });
 
     socket.on('clientSpawnActor', function (datastr) {
@@ -441,3 +447,49 @@ io.on('connection', function (socket) {
 server.listen(port, "0.0.0.0", () => {
     console.log(`Express web server started: http://localhost:${port}`)
 });
+
+//
+
+const request = require('request');
+
+class Gamelog {
+    static URL = "https://dmdassc.glitch.me/gamelog/log";
+    static LOCAL_URL = "http://127.0.0.1:3000/gamelog/log";
+    static SERVICE_NAME = "171-server";
+    static forceSendToMainServer = false;
+
+    static log(address, message) {
+        let url = this.URL
+        let isLocal = address.includes("127.0.0.1");
+
+        if(isLocal && !this.forceSendToMainServer)
+            url = this.LOCAL_URL;
+            
+
+        const data = {
+            service: this.SERVICE_NAME,
+            address: address,
+            message: message,
+            sendPing: !isLocal,
+            isLocal: isLocal
+        }
+
+        console.log("[gamelog] post", url, data.message)
+
+        request.post(
+            url,
+            { headers: {'user-agent': `service-${this.SERVICE_NAME}`}, json: data },
+            function (error, response, body) {
+
+                if(error) {
+                    console.log("[gamelog] post error");
+                    return
+                }
+
+                if (response.statusCode == 200) {
+                    console.log("[gamelog] post ok");
+                }
+            }
+        );
+    }
+}
